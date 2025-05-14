@@ -37,20 +37,38 @@ public sealed class Parser
 
     private IOperation Term()
     {
+        var counter = 0;
+
         switch (CurrentToken)
         {
             case NextCellToken:
-                Eat(typeof(NextCellToken));
-                return new NextCellOperation();
+                while (CurrentToken is NextCellToken)
+                {
+                    counter++;
+                    Eat(typeof(NextCellToken));
+                }
+                return new NextCellOperation(counter);
             case PrevCellToken:
-                Eat(typeof(PrevCellToken));
-                return new PreviousCellOperation();
+                while (CurrentToken is PrevCellToken)
+                {
+                    counter++;
+                    Eat(typeof(PrevCellToken));
+                }
+                return new PreviousCellOperation(counter);
             case AddToken:
-                Eat(typeof(AddToken));
-                return new AddOperation();
+                while (CurrentToken is AddToken)
+                {
+                    counter++;
+                    Eat(typeof(AddToken));
+                }
+                return new AddOperation(counter);
             case SubtractToken:
-                Eat(typeof(SubtractToken));
-                return new SubtractOperation();
+                while (CurrentToken is SubtractToken)
+                {
+                    counter++;
+                    Eat(typeof(SubtractToken));
+                }
+                return new SubtractOperation(counter);
             case LoopStartToken:
                 Eat(typeof(LoopStartToken));
                 return Loop();

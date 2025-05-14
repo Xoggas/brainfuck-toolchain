@@ -1,7 +1,9 @@
-﻿namespace BrainfuckToAsm;
+﻿using BrainfuckToAsm;
 
 public static class Program
 {
+    private static string s_basePath = @"C:\Users\raspisanie\Documents\GitHub\brainfuck-to-asm\BrainfuckToAsm";
+    
     public static void Main(string[] args)
     {
         if (args.Length != 1)
@@ -22,8 +24,8 @@ public static class Program
 
         var operations = parser.Parse().ToArray();
 
-        var interpreter = new Interpreter(operations);
+        var transpiler = new Transpiler(operations);
         
-        interpreter.Interpret();
+        File.WriteAllText(Path.Combine(s_basePath, "Output.cs"), transpiler.Transpile());
     }
 }
