@@ -1,4 +1,4 @@
-﻿namespace BrainfuckToAsm;
+﻿namespace BrainfuckToCSharp;
 
 public interface IOperation
 {

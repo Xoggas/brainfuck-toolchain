@@ -1,10 +1,10 @@
-﻿namespace BrainfuckToAsm;
+﻿namespace BrainfuckToCSharp;
 
 public sealed class Interpreter
 {
     private readonly IOperation[] _operations;
     private readonly char[] _memory = new char[30000];
-    private int _ptr = 0;
+    private int _ptr;
 
     public Interpreter(IEnumerable<IOperation> operations)
     {
@@ -25,29 +25,17 @@ public sealed class Interpreter
     {
         switch (operation)
         {
-            case NextCellOperation:
-                _ptr++;
-
-                if (_ptr >= _operations.Length)
-                {
-                    _ptr = 0;
-                }
-
+            case NextCellOperation nextCellOperation:
+                _ptr += nextCellOperation.Count;
                 break;
-            case PreviousCellOperation:
-                _ptr--;
-
-                if (_ptr < 0)
-                {
-                    _ptr = _operations.Length - 1;
-                }
-
+            case PreviousCellOperation previousCellOperation:
+                _ptr -= previousCellOperation.Count;
                 break;
-            case AddOperation:
-                _memory[_ptr]++;
+            case AddOperation addOperation:
+                _memory[_ptr] += (char)addOperation.Count;
                 break;
-            case SubtractOperation:
-                _memory[_ptr]--;
+            case SubtractOperation subtractOperation:
+                _memory[_ptr] -= (char)subtractOperation.Count;
                 break;
             case OutputOperation:
                 Console.Write(_memory[_ptr]);

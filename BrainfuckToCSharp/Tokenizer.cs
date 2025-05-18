@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace BrainfuckToAsm;
+namespace BrainfuckToCSharp;
 
 public sealed class Tokenizer : IEnumerable<IToken>
 {
