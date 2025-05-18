@@ -1,15 +1,5 @@
 ﻿namespace BrainfuckToCSharp;
 
-public sealed class Instruction
-{
-    public readonly byte[] Bytes;
-
-    public Instruction(byte[] bytes)
-    {
-        Bytes = bytes;
-    }
-}
-
 public sealed class Compiler
 {
     private const byte IncrementDecrementOpCode = 0x0;
