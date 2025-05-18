@@ -1,39 +1,54 @@
-## 🧠 Brainfuck to C# Transpiler
+## Brainfuck Toolchain (Transpiler, Interpreter, Compiler)
 
-**BrainfuckToCSharp** is a lightweight console utility that transpiles [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) code into equivalent C# code. Each Brainfuck instruction is translated into readable and compilable C# logic that emulates the behavior of the original program.
+This project provides a full toolchain for working with the Brainfuck language. It includes:
 
----
-
-## ✨ Features
-
-* Full support for all Brainfuck commands: `+ - > < . , [ ]`
-* Generates clean and understandable C# output
-* Simple CLI usage — just pass the input file path
+* 🧾 **Transpiler** – Converts Brainfuck code into C# source code.
+* 🖥 **Interpreter** – Executes Brainfuck using a custom virtual machine.
+* 🛠 **Compiler** – Compiles Brainfuck into a custom compact instruction format.
 
 ---
 
-## 🛠 Usage
+## 🔧 Custom Instruction Set
 
-To transpile a Brainfuck file, run the program from the command line and pass the path to the `.bf` file as the only argument:
+The compiler translates Brainfuck code into a custom bytecode format, where each instruction is 1 to 5 bytes long. Below is the encoding:
 
-```bash
-dotnet run -- "path/to/your/code.bf"
+| Brainfuck | Instruction         | Bytes   | Description                      |
+| --------- | ------------------- | ------- | -------------------------------- |
+| `+`       | `0x00 0x00 <value>` | 3 bytes | Increment memory cell by `value` |
+| `-`       | `0x00 0x01 <value>` | 3 bytes | Decrement memory cell by `value` |
+| `>`       | `0x01 0x00 <value>` | 3 bytes | Move pointer right by `value`    |
+| `<`       | `0x01 0x01 <value>` | 3 bytes | Move pointer left by `value`     |
+| `,`       | `0x02`              | 1 byte  | Read input into current cell     |
+| `.`       | `0x03`              | 1 byte  | Write current cell to output     |
+| `goto`    | `0x04 <u32 index>`  | 5 bytes | Jump to instruction at index     |
+| `goto_if` | `0x05 <u32 index>`  | 5 bytes | If current cell == 0, jump       |
+| `ret`     | `0x06`              | 1 byte  | Terminate execution              |
+
+### 🔁 Loop Generation Strategy
+
+Loops (`[ ... ]`) are compiled using a combination of `goto_if` and `goto`:
+
+```text
+goto_if L_end
+  [ loop body ]
+goto L_start
+L_end:
 ```
 
-The transpiled C# code will be written to a file named `Output.cs` in the current directory.
+This effectively creates a while-like loop: it checks the current cell, and jumps over the loop if it's zero, or re-enters it otherwise.
 
 ---
 
-## 📌 Example
+## 📥 Sample Input
 
-Input Brainfuck code:
-
-```
+```brainfuck
 >+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.>>>++++++++[<++++>-]
 <.>>>++++++++++[<+++++++++>-]<---.<<<<.+++.------.--------.>>+.>++++++++++.
 ```
 
-Transpiled C# output:
+---
+
+## 🔄 Transpiler Output (C#)
 
 ```csharp
 var memory = new char[30000];
@@ -47,7 +62,6 @@ while (memory[ptr] != 0)
     ptr += 1;
     memory[ptr] -= (char)1;
 }
-
 ptr -= 1;
 Console.Write(memory[ptr]);
 ptr += 1;
@@ -59,7 +73,6 @@ while (memory[ptr] != 0)
     ptr += 1;
     memory[ptr] -= (char)1;
 }
-
 ptr -= 1;
 memory[ptr] += (char)1;
 Console.Write(memory[ptr]);
@@ -77,7 +90,6 @@ while (memory[ptr] != 0)
     ptr += 1;
     memory[ptr] -= (char)1;
 }
-
 ptr -= 1;
 Console.Write(memory[ptr]);
 ptr += 3;
@@ -89,7 +101,6 @@ while (memory[ptr] != 0)
     ptr += 1;
     memory[ptr] -= (char)1;
 }
-
 ptr -= 1;
 memory[ptr] -= (char)3;
 Console.Write(memory[ptr]);
@@ -111,6 +122,22 @@ Console.Write(memory[ptr]);
 
 ---
 
-## 📄 License
+## 🧱 Compiler Output (Bytecode)
 
-This project is licensed under the MIT License. Feel free to use, modify, and distribute it.
+```
+0x01, 0x00, 0x01, 0x00, 0x00, 0x09, 0x05, 0x1C, 0x00, 0x00, 0x00, 0x01,
+0x01, 0x01, 0x00, 0x00, 0x08, 0x01, 0x00, 0x01, 0x00, 0x01, 0x01, 0x04,
+0x06, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x03, 0x01, 0x00, 0x01, 0x00,
+0x00, 0x07, 0x05, 0x3C, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
+0x04, 0x01, 0x00, 0x01, 0x00, 0x01, 0x01, 0x04, 0x26, 0x00, 0x00, 0x00,
+0x01, 0x01, 0x01, 0x00, 0x00, 0x01, 0x03, 0x00, 0x00, 0x07, 0x03, 0x03,
+0x00, 0x00, 0x03, 0x03, 0x01, 0x00, 0x03, 0x00, 0x00, 0x08, 0x05, 0x68,
+0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x04, 0x01, 0x00, 0x01,
+0x00, 0x01, 0x01, 0x04, 0x52, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x03,
+0x01, 0x00, 0x03, 0x00, 0x00, 0x0A, 0x05, 0x88, 0x00, 0x00, 0x00, 0x01,
+0x01, 0x01, 0x00, 0x00, 0x09, 0x01, 0x00, 0x01, 0x00, 0x01, 0x01, 0x04,
+0x72, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x01, 0x03, 0x03, 0x01,
+0x01, 0x04, 0x03, 0x00, 0x00, 0x03, 0x03, 0x00, 0x01, 0x06, 0x03, 0x00,
+0x01, 0x08, 0x03, 0x01, 0x00, 0x02, 0x00, 0x00, 0x01, 0x03, 0x01, 0x00,
+0x01, 0x00, 0x00, 0x0A, 0x03, 0x06
+```
