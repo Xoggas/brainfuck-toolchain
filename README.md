@@ -1,4 +1,4 @@
-## Brainfuck Toolchain (Transpiler, Interpreter, Compiler)
+## 🧠 Brainfuck Toolchain (Transpiler, Interpreter, Compiler)
 
 This project provides a full toolchain for working with the Brainfuck language. It includes:
 
@@ -141,3 +141,6 @@ Console.Write(memory[ptr]);
 0x01, 0x08, 0x03, 0x01, 0x00, 0x02, 0x00, 0x00, 0x01, 0x03, 0x01, 0x00,
 0x01, 0x00, 0x00, 0x0A, 0x03, 0x06
 ```
+
+## 📄 License
+This project is licensed under the MIT License — you can use, modify, and distribute it freely, with proper attribution. The software is provided as is, without any warranty.
