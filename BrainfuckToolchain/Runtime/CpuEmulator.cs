@@ -2,8 +2,10 @@
 
 public sealed class CpuEmulator
 {
-    private const byte IncrementDecrementOpCode = 0x0;
-    private const byte MoveOpCode = 0x1;
+    private const byte IncrementOpCode = 0x0;
+    private const byte DecrementOpCode = 0x8;
+    private const byte SelectNextCellOpCode = 0x1;
+    private const byte SelectPreviousCellOpCode = 0x7;
     private const byte InputOpCode = 0x2;
     private const byte OutputOpCode = 0x3;
     private const byte GotoOpCode = 0x4;
@@ -49,10 +51,10 @@ public sealed class CpuEmulator
         {
             switch (CurrentByte)
             {
-                case IncrementDecrementOpCode:
+                case IncrementOpCode or DecrementOpCode:
                     ExecuteIncrementDecrementInstruction();
                     break;
-                case MoveOpCode:
+                case SelectNextCellOpCode or SelectPreviousCellOpCode:
                     ExecuteMoveOperation();
                     break;
                 case InputOpCode:
@@ -71,6 +73,7 @@ public sealed class CpuEmulator
                     {
                         _instructionPtr = nextIp;
                     }
+
                     break;
                 case GotoOpCode:
                     _ = ReadByte();
@@ -85,34 +88,32 @@ public sealed class CpuEmulator
 
     private void ExecuteIncrementDecrementInstruction()
     {
-        _ = ReadByte();
-        var sign = ReadByte();
-        var value = ReadByte();
+        var operation = ReadByte();
+        var offset = ReadByte();
 
-        switch (sign)
+        switch (operation)
         {
-            case 0x0:
-                _memory[_ptr] += (char)value;
+            case IncrementOpCode:
+                _memory[_ptr] += (char)offset;
                 break;
-            case 0x1:
-                _memory[_ptr] -= (char)value;
+            case DecrementOpCode:
+                _memory[_ptr] -= (char)offset;
                 break;
         }
     }
-    
+
     private void ExecuteMoveOperation()
     {
-        _ = ReadByte();
-        var sign = ReadByte();
-        var value = ReadByte();
+        var operation = ReadByte();
+        var offset = ReadByte();
 
-        switch (sign)
+        switch (operation)
         {
-            case 0x0:
-                _ptr += value;
+            case SelectNextCellOpCode:
+                _ptr += offset;
                 break;
-            case 0x1:
-                _ptr -= value;
+            case SelectPreviousCellOpCode:
+                _ptr -= offset;
                 break;
         }
     }

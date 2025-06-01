@@ -2,8 +2,10 @@
 
 public sealed class Compiler
 {
-    private const byte IncrementDecrementOpCode = 0x0;
-    private const byte MoveOpCode = 0x1;
+    private const byte IncrementOpCode = 0x0;
+    private const byte DecrementOpCode = 0x8;
+    private const byte SelectNextCellOpCode = 0x1;
+    private const byte SelectPreviousCellOpCode = 0x7;
     private const byte InputOpCode = 0x2;
     private const byte OutputOpCode = 0x3;
     private const byte GotoOpCode = 0x4;
@@ -11,7 +13,6 @@ public sealed class Compiler
     private const byte ReturnOpCode = 0x6;
 
     private readonly IOperation[] _operations;
-    private readonly Stack<uint> _loopStack = [];
     private readonly List<byte> _instructions = [];
 
     public Compiler(IEnumerable<IOperation> operations)
@@ -50,19 +51,19 @@ public sealed class Compiler
         switch (operation)
         {
             case NextCellOperation nextCellOperation:
-                AddInstruction(MoveOpCode, 0x0,
+                AddInstruction(SelectNextCellOpCode, 
                     (byte)nextCellOperation.Count);
                 break;
             case PreviousCellOperation previousCellOperation:
-                AddInstruction(MoveOpCode, 0x1,
+                AddInstruction(SelectPreviousCellOpCode, 
                     (byte)previousCellOperation.Count);
                 break;
             case AddOperation addOperation:
-                AddInstruction(IncrementDecrementOpCode, 0x0,
+                AddInstruction(IncrementOpCode,
                     (byte)addOperation.Count);
                 break;
             case SubtractOperation subtractOperation:
-                AddInstruction(IncrementDecrementOpCode, 0x1,
+                AddInstruction(DecrementOpCode,
                     (byte)subtractOperation.Count);
                 break;
             case InputOperation:

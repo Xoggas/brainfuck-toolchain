@@ -4,10 +4,6 @@ public interface IOperation
 {
 }
 
-public sealed class ExitOperation : IOperation
-{
-}
-
 public sealed class NextCellOperation : IOperation
 {
     public int Count { get; }
